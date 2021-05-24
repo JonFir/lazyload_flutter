@@ -1,0 +1,14 @@
+include: package:pedantic/analysis_options.1.11.0.yaml
+
+analyzer:
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
+
+linter:
+  rules:
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - avoid_print
+    - use_key_in_widget_constructors
+    - always_use_package_imports
