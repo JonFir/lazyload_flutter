@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-final key = GlobalKey<_ColoredWidgetState>();
-
 class Example extends StatelessWidget {
   Example({Key? key}) : super(key: key);
 
@@ -32,8 +30,8 @@ class NextScreen extends StatelessWidget {
   const NextScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(_) {
+    return const Scaffold(
       body: SafeArea(
         child: InheritExample(
           child: ColoredWidget(
@@ -41,9 +39,8 @@ class NextScreen extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.all(40),
               child: ColoredWidget(
-                key: key,
                 initalColor: Colors.green,
-                child: const Padding(
+                child: Padding(
                   padding: EdgeInsets.all(40),
                   child: ColorButton(),
                 ),
@@ -112,7 +109,14 @@ class _ColoredWidgetState extends State<ColoredWidget> {
 class ColorButton extends StatelessWidget {
   const ColorButton({Key? key}) : super(key: key);
 
-  void _onPressed(BuildContext context) {}
+  void _onPressed(BuildContext context) {
+    context
+        .findAncestorStateOfType<_ColoredWidgetState>()
+        ?.chnageColor(Colors.pink);
+    context
+        .findRootAncestorStateOfType<_ColoredWidgetState>()
+        ?.chnageColor(Colors.yellow);
+  }
 
   @override
   Widget build(BuildContext context) {
