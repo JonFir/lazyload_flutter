@@ -27,7 +27,7 @@ class _SimpleCalcWidgetState extends State<SimpleCalcWidget> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: SimpleCalcWidgetProvider(
+        child: ChangeNotifierProvider(
           model: _model,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -55,7 +55,8 @@ class FirstNumberWidget extends StatelessWidget {
     return TextField(
       decoration: const InputDecoration(border: OutlineInputBorder()),
       onChanged: (String value) =>
-          SimpleCalcWidgetProvider.read(context)?.firstNumber = value,
+          ChangeNotifierProvider.read<SimpleCalcWidgetModel>(context)
+              ?.firstNumber = value,
     );
   }
 }
@@ -68,7 +69,8 @@ class SecondNumberWidget extends StatelessWidget {
     return TextField(
       decoration: const InputDecoration(border: OutlineInputBorder()),
       onChanged: (String value) =>
-          SimpleCalcWidgetProvider.read(context)?.secondNumber = value,
+          ChangeNotifierProvider.read<SimpleCalcWidgetModel>(context)
+              ?.secondNumber = value,
     );
   }
 }
@@ -79,7 +81,8 @@ class SummButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => SimpleCalcWidgetProvider.read(context)?.summ(),
+      onPressed: () =>
+          ChangeNotifierProvider.read<SimpleCalcWidgetModel>(context)?.summ(),
       child: const Text('Посчитать сумму'),
     );
   }
@@ -90,7 +93,9 @@ class ResultWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final value = SimpleCalcWidgetProvider.watch(context)?.summResult ?? '-1';
+    final value = ChangeNotifierProvider.watch<SimpleCalcWidgetModel>(context)
+            ?.summResult ??
+        '-1';
     return Text('Результат: $value');
   }
 }
@@ -113,11 +118,11 @@ class SimpleCalcWidgetModel extends ChangeNotifier {
   }
 }
 
-class SimpleCalcWidgetProvider
-    extends InheritedNotifier<SimpleCalcWidgetModel> {
-  SimpleCalcWidgetProvider({
+class ChangeNotifierProvider<T extends ChangeNotifier>
+    extends InheritedNotifier<T> {
+  ChangeNotifierProvider({
     Key? key,
-    required SimpleCalcWidgetModel model,
+    required T model,
     required Widget child,
   }) : super(
           key: key,
@@ -125,17 +130,17 @@ class SimpleCalcWidgetProvider
           child: child,
         );
 
-  static SimpleCalcWidgetModel? watch(BuildContext context) {
+  static T? watch<T extends ChangeNotifier>(BuildContext context) {
     return context
-        .dependOnInheritedWidgetOfExactType<SimpleCalcWidgetProvider>()
+        .dependOnInheritedWidgetOfExactType<ChangeNotifierProvider<T>>()
         ?.notifier;
   }
 
-  static SimpleCalcWidgetModel? read(BuildContext context) {
+  static T? read<T extends ChangeNotifier>(BuildContext context) {
     final widget = context
-        .getElementForInheritedWidgetOfExactType<SimpleCalcWidgetProvider>()
+        .getElementForInheritedWidgetOfExactType<ChangeNotifierProvider<T>>()
         ?.widget;
-    if (widget is SimpleCalcWidgetProvider) {
+    if (widget is ChangeNotifierProvider<T>) {
       return widget.notifier;
     } else {
       return null;
@@ -143,7 +148,7 @@ class SimpleCalcWidgetProvider
   }
 
   @override
-  bool updateShouldNotify(SimpleCalcWidgetProvider oldWidget) {
+  bool updateShouldNotify(ChangeNotifierProvider<T> oldWidget) {
     return notifier != oldWidget.notifier;
   }
 }
