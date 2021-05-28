@@ -146,9 +146,4 @@ class ChangeNotifierProvider<T extends ChangeNotifier>
       return null;
     }
   }
-
-  @override
-  bool updateShouldNotify(ChangeNotifierProvider<T> oldWidget) {
-    return notifier != oldWidget.notifier;
-  }
 }
