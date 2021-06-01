@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class Example extends StatelessWidget {
@@ -25,6 +27,30 @@ class Address {
     required this.house,
     required this.flat,
   });
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'city': city,
+      'street': street,
+      'house': house,
+      'flat': flat,
+    };
+  }
+
+  factory Address.fromMap(Map<String, dynamic> map) {
+    return Address(
+      city: map['city'] as String,
+      street: map['street'] as String,
+      house: map['house'] as String,
+      flat: map['flat'] as int,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Address.fromJson(String source) => Address.fromMap(
+        json.decode(source) as Map<String, dynamic>,
+      );
 }
 
 class Human {
@@ -39,6 +65,34 @@ class Human {
     required this.age,
     required this.addreses,
   });
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'name': name,
+      'surname': surname,
+      'age': age,
+      'addreses': addreses.map((x) => x.toMap()).toList(),
+    };
+  }
+
+  factory Human.fromMap(Map<String, dynamic> map) {
+    return Human(
+      name: map['name'] as String,
+      surname: map['surname'] as String,
+      age: map['age'] as int,
+      addreses: List<Address>.from(
+        (map['addreses'] as List<dynamic>).map<Address>(
+          (dynamic x) => Address.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Human.fromJson(String source) => Human.fromMap(
+        json.decode(source) as Map<String, dynamic>,
+      );
 }
 
 final humans = [
