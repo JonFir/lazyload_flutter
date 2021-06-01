@@ -1,4 +1,4 @@
-import 'package:dart_lesson/example.dart';
+import 'package:dart_lesson/widgets/example/example.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
