@@ -6,7 +6,7 @@ import 'package:dart_lesson/domain/entity/post.dart';
 class ApiClient {
   final client = HttpClient();
 
-  Future<List<Post>> getPost() async {
+  Future<List<Post>> getPosts() async {
     final url = Uri.parse('https://jsonplaceholder.typicode.com/posts');
     final request = await client.getUrl(url);
     final response = await request.close();
