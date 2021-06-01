@@ -1,6 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'example.g.dart';
 
 class Example extends StatelessWidget {
   Example({Key? key}) : super(key: key);
@@ -38,44 +41,6 @@ class ButtonWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-class Address {
-  final String city;
-  final String street;
-  final String house;
-  final int flat;
-
-  Address({
-    required this.city,
-    required this.street,
-    required this.house,
-    required this.flat,
-  });
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'city': city,
-      'street': street,
-      'house': house,
-      'flat': flat,
-    };
-  }
-
-  factory Address.fromMap(Map<String, dynamic> map) {
-    return Address(
-      city: map['city'] as String,
-      street: map['street'] as String,
-      house: map['house'] as String,
-      flat: map['flat'] as int,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Address.fromJson(String source) => Address.fromMap(
-        json.decode(source) as Map<String, dynamic>,
-      );
 }
 
 class JsonExampleProvider extends InheritedWidget {
@@ -193,12 +158,13 @@ class JsonExampleCoder {
   void decode() {
     final json = jsonDecode(jsonString) as List<dynamic>;
     final users = json
-        .map<Human>((dynamic e) => Human.fromMap(e as Map<String, dynamic>))
+        .map<Human>((dynamic e) => Human.fromJson(e as Map<String, dynamic>))
         .toList();
     print(users);
   }
 }
 
+@JsonSerializable()
 class Human {
   String name;
   String surname;
@@ -212,31 +178,26 @@ class Human {
     required this.addreses,
   });
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'name': name,
-      'surname': surname,
-      'age': age,
-      'addreses': addreses.map((x) => x.toMap()).toList(),
-    };
-  }
+  factory Human.fromJson(Map<String, dynamic> json) => _$HumanFromJson(json);
 
-  factory Human.fromMap(Map<String, dynamic> map) {
-    return Human(
-      name: map['name'] as String,
-      surname: map['surname'] as String,
-      age: map['age'] as int,
-      addreses: List<Address>.from(
-        (map['addreses'] as List<dynamic>).map<Address>(
-          (dynamic x) => Address.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-    );
-  }
+  Map<String, dynamic> toJson() => _$HumanToJson(this);
+}
 
-  String toJson() => json.encode(toMap());
+@JsonSerializable()
+class Address {
+  final String city;
+  final String street;
+  final String house;
+  final int flat;
 
-  factory Human.fromJson(String source) => Human.fromMap(
-        json.decode(source) as Map<String, dynamic>,
-      );
+  Address({
+    required this.city,
+    required this.street,
+    required this.house,
+    required this.flat,
+  });
+
+  factory Address.fromJson(Map<String, dynamic> json) =>
+      _$AddressFromJson(json);
+  Map<String, dynamic> toJson() => _$AddressToJson(this);
 }
