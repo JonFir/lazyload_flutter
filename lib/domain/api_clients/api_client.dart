@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:path/path.dart';
 
 import 'package:dart_lesson/domain/entity/post.dart';
 
@@ -39,5 +40,25 @@ class ApiClient {
     final json = jsonDecode(string) as Map<String, dynamic>;
     final post = Post.fromJson(json);
     return post;
+  }
+
+  Future<void> fileUpload(File file) async {
+    final url = Uri.parse('https://example.com');
+
+    final request = await client.postUrl(url);
+
+    request.headers.set(HttpHeaders.contentTypeHeader, ContentType.binary);
+    request.headers.add('filename', basename(file.path));
+    request.contentLength = file.lengthSync();
+    final fileStream = file.openRead();
+    await request.addStream(fileStream);
+
+    final httpResponse = await request.close();
+
+    if (httpResponse.statusCode != 200) {
+      throw Exception('Error uploading file');
+    } else {
+      return;
+    }
   }
 }
