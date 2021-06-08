@@ -1,4 +1,4 @@
-import 'package:dart_lesson/widgets/example/example.dart';
+import 'package:dart_lesson/widgets/example/example_widget.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Example(),
+      home: ExampleWidget(),
     );
   }
 }
