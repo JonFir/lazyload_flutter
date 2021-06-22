@@ -5,10 +5,10 @@ import 'package:dart_lesson/ui/widgets/tasks/tasks_widget.dart';
 import 'package:flutter/material.dart';
 
 abstract class MainNavigationRouteNames {
-  static const groups = 'groups';
-  static const groupsFrom = 'groups/form';
-  static const tasks = 'groups/tasks';
-  static const tasksForm = 'groups/tasks/form';
+  static const groups = '/';
+  static const groupsFrom = '/groupForm';
+  static const tasks = '/tasks';
+  static const tasksForm = '/tasks/form';
 }
 
 class MainNavigation {
