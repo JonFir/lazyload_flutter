@@ -1,4 +1,4 @@
-import 'package:dart_lesson/widgets/groups/goups_widget_model.dart';
+import 'package:dart_lesson/ui/widgets/groups/goups_widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 

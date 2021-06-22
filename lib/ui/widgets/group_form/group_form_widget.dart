@@ -1,4 +1,4 @@
-import 'package:dart_lesson/widgets/group_form/group_form_widget_model.dart';
+import 'package:dart_lesson/ui/widgets/group_form/group_form_widget_model.dart';
 import 'package:flutter/material.dart';
 
 class GroupFormWidget extends StatefulWidget {

@@ -1,4 +1,4 @@
-import 'package:dart_lesson/widgets/app/my_app.dart';
+import 'package:dart_lesson/ui/widgets/app/my_app.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';

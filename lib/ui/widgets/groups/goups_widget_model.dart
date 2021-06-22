@@ -1,5 +1,6 @@
 import 'package:dart_lesson/domain/entity/group.dart';
 import 'package:dart_lesson/domain/entity/task.dart';
+import 'package:dart_lesson/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,7 +16,7 @@ class GroupsWidgetModel extends ChangeNotifier {
   }
 
   void showForm(BuildContext context) {
-    Navigator.of(context).pushNamed('/groups/form');
+    Navigator.of(context).pushNamed(MainNavigationRouteNames.groupsFrom);
   }
 
   void showTasks(BuildContext context, int groupIndex) async {
@@ -26,7 +27,10 @@ class GroupsWidgetModel extends ChangeNotifier {
     final groupKey = box.keyAt(groupIndex) as int;
 
     unawaited(
-      Navigator.of(context).pushNamed('/groups/tasks', arguments: groupKey),
+      Navigator.of(context).pushNamed(
+        MainNavigationRouteNames.tasks,
+        arguments: groupKey,
+      ),
     );
   }
 
