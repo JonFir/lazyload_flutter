@@ -2,12 +2,25 @@ import 'package:dart_lesson/domain/entity/group.dart';
 import 'package:dart_lesson/library/hive/box_manager.dart';
 import 'package:flutter/material.dart';
 
-class GroupFormWidgetModel {
-  var groupName = '';
+class GroupFormWidgetModel extends ChangeNotifier {
+  var _groupName = '';
+  String? errorText;
 
-  void saveGroup(BuildContext context) async {
-    if (groupName.isEmpty) return;
-    final group = Group(name: groupName);
+  set groupName(String value) {
+    if (errorText != null && value.trim().isNotEmpty) {
+      errorText = null;
+      notifyListeners();
+    }
+    _groupName = value;
+  }
+
+  Future<void> saveGroup(BuildContext context) async {
+    if (_groupName.trim().isEmpty) {
+      errorText = 'Введите название группы';
+      notifyListeners();
+      return;
+    }
+    final group = Group(name: _groupName);
     final box = await BoxManager.instance.openGroupBox();
     await box.add(group);
     await BoxManager.instance.closeBox(box);
@@ -15,7 +28,7 @@ class GroupFormWidgetModel {
   }
 }
 
-class GroupFormWidgetModelProvider extends InheritedWidget {
+class GroupFormWidgetModelProvider extends InheritedNotifier {
   final GroupFormWidgetModel model;
   const GroupFormWidgetModelProvider({
     Key? key,
@@ -23,6 +36,7 @@ class GroupFormWidgetModelProvider extends InheritedWidget {
     required Widget child,
   }) : super(
           key: key,
+          notifier: model,
           child: child,
         );
 

@@ -2,16 +2,23 @@ import 'package:dart_lesson/library/hive/box_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:dart_lesson/domain/entity/task.dart';
 
-class TaskFormWidgetModel {
+class TaskFormWidgetModel extends ChangeNotifier {
   int groupKey;
-  var taskText = '';
+  var _taskText = '';
+  bool get isValid => _taskText.isNotEmpty;
+
+  set taskText(String value) {
+    final isTaskTextEmpty = _taskText.trim().isEmpty;
+    _taskText = value;
+    if (value.trim().isEmpty != isTaskTextEmpty) {
+      notifyListeners();
+    }
+  }
 
   TaskFormWidgetModel({required this.groupKey});
 
   void saveTask(BuildContext context) async {
-    if (taskText.isEmpty) return;
-
-    final task = Task(text: taskText, isDone: false);
+    final task = Task(text: _taskText, isDone: false);
     final box = await BoxManager.instance.openTaskBox(groupKey);
     await box.add(task);
     await BoxManager.instance.closeBox(box);
@@ -19,7 +26,7 @@ class TaskFormWidgetModel {
   }
 }
 
-class TaskFormWidgetModelProvider extends InheritedWidget {
+class TaskFormWidgetModelProvider extends InheritedNotifier {
   final TaskFormWidgetModel model;
 
   const TaskFormWidgetModelProvider({
@@ -28,6 +35,7 @@ class TaskFormWidgetModelProvider extends InheritedWidget {
     required Widget child,
   }) : super(
           key: key,
+          notifier: model,
           child: child,
         );
 

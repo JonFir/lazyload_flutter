@@ -35,6 +35,13 @@ class _TextFormWidgetBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = TaskFormWidgetModelProvider.watch(context)?.model;
+    final addButton = FloatingActionButton(
+      onPressed: () =>
+          TaskFormWidgetModelProvider.watch(context)?.model.saveTask(context),
+      child: const Icon(Icons.done),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Новая задача'),
@@ -47,11 +54,7 @@ class _TextFormWidgetBody extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            TaskFormWidgetModelProvider.read(context)?.model.saveTask(context),
-        child: const Icon(Icons.done),
-      ),
+      floatingActionButton: model?.isValid == true ? addButton : null,
     );
   }
 }
@@ -72,7 +75,6 @@ class _TaskTextWidget extends StatelessWidget {
         hintText: 'Текст задачи',
       ),
       onChanged: (value) => model?.taskText = value,
-      onEditingComplete: () => model?.saveTask(context),
     );
   }
 }
