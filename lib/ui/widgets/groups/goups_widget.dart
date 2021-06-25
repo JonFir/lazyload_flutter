@@ -10,14 +10,20 @@ class GroupsWidget extends StatefulWidget {
 }
 
 class _GroupsWidgetState extends State<GroupsWidget> {
-  final model = GroupsWidgetModel();
+  final _model = GroupsWidgetModel();
 
   @override
   Widget build(BuildContext context) {
     return GroupsWidgetModelProvider(
-      model: model,
+      model: _model,
       child: const _GroupsWidgetBody(),
     );
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+    super.dispose();
   }
 }
 
