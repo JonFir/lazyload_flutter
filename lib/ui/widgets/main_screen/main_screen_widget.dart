@@ -4,7 +4,7 @@ import 'package:dart_lesson/ui/widgets/tv_show_list/tv_show_list_widget.dart';
 import 'package:flutter/material.dart';
 
 class MainScreenWidget extends StatefulWidget {
-  MainScreenWidget({Key? key}) : super(key: key);
+  const MainScreenWidget({Key? key}) : super(key: key);
 
   @override
   _MainScreenWidgetState createState() => _MainScreenWidgetState();
