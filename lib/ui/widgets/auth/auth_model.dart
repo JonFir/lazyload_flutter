@@ -1,5 +1,6 @@
 import 'package:dart_lesson/domain/api_client/api_client.dart';
 import 'package:dart_lesson/domain/data_providers/session_data_provider.dart';
+import 'package:dart_lesson/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:pedantic/pedantic.dart';
 
@@ -50,7 +51,9 @@ class AuthModel extends ChangeNotifier {
       return;
     }
     await _sessionDataProvider.setSessionId(sessionId);
-    unawaited(Navigator.of(context).pushNamed('/main_screen'));
+    unawaited(
+      Navigator.of(context).pushReplacementNamed(MainNavigationRouteNames.mainScreen),
+    );
   }
 }
 
