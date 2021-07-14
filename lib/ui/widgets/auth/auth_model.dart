@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dart_lesson/domain/api_client/api_client.dart';
 import 'package:dart_lesson/domain/data_providers/session_data_provider.dart';
 import 'package:dart_lesson/ui/navigation/main_navigation.dart';
@@ -36,8 +38,19 @@ class AuthModel extends ChangeNotifier {
         username: login,
         password: password,
       );
-    } catch (e) {
-      _errorMessage = 'Неправильный логин пароль!';
+    } on ApiClientException catch (e) {
+      switch (e.type) {
+        case ApiClientExceptionType.Network:
+          _errorMessage =
+              'Сервер не доступен. Проверте подключение к интернету';
+          break;
+        case ApiClientExceptionType.Auth:
+          _errorMessage = 'Неправильный логин пароль!';
+          break;
+        case ApiClientExceptionType.Other:
+          _errorMessage = 'Произошла ошибка. Попробуйте еще раз';
+          break;
+      }
     }
     _isAuthProgress = false;
     if (_errorMessage != null) {
@@ -57,4 +70,3 @@ class AuthModel extends ChangeNotifier {
     );
   }
 }
-
