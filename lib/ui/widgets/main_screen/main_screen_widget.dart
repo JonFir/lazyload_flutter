@@ -1,6 +1,7 @@
 import 'package:dart_lesson/Library/Widgets/Inherited/provider.dart';
 import 'package:dart_lesson/domain/data_providers/session_data_provider.dart';
 import 'package:dart_lesson/ui/widgets/main_screen/main_screen_model.dart';
+import 'package:dart_lesson/ui/widgets/movie_list/movie_list_model.dart';
 import 'package:dart_lesson/ui/widgets/movie_list/movie_list_widget.dart';
 import 'package:dart_lesson/ui/widgets/news/new_widget.dart';
 import 'package:dart_lesson/ui/widgets/tv_show_list/tv_show_list_widget.dart';
@@ -15,12 +16,20 @@ class MainScreenWidget extends StatefulWidget {
 
 class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedTab = 0;
+  final movieListModel = MovieListModel();
 
   void onSelectTab(int index) {
     if (_selectedTab == index) return;
     setState(() {
       _selectedTab = index;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    movieListModel.setupLocale(context);
   }
 
   @override
@@ -40,7 +49,10 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
         index: _selectedTab,
         children: [
           const NewsWidget(),
-          MovieListWidget(),
+          NotifierProvider(
+            model: movieListModel,
+            child: const MovieListWidget(),
+          ),
           TWShowListWidget(),
         ],
       ),
