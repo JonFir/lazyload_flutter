@@ -161,7 +161,7 @@ class ApiClient {
       '/movie/$movieId',
       parser,
       <String, dynamic>{
-        'append_to_response': 'credits',
+        'append_to_response': 'credits,videos',
         'api_key': _apiKey,
         'language': locale,
       },
