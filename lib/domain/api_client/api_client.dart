@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:dart_lesson/domain/entity/popular_movie_response.dart';
 import 'package:dart_lesson/domain/entity/movie_details.dart';
 
-enum ApiClientExceptionType { Network, Auth, Other }
+enum ApiClientExceptionType { Network, Auth, Other, SessionExpired }
 
 class ApiClientException implements Exception {
   final ApiClientExceptionType type;
@@ -298,6 +298,8 @@ class ApiClient {
       final code = status is int ? status : 0;
       if (code == 30) {
         throw ApiClientException(ApiClientExceptionType.Auth);
+      } else if (code == 3) {
+        throw ApiClientException(ApiClientExceptionType.SessionExpired);
       } else {
         throw ApiClientException(ApiClientExceptionType.Other);
       }
