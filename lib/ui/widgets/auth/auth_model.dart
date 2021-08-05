@@ -49,6 +49,7 @@ class AuthModel extends ChangeNotifier {
         case ApiClientExceptionType.Auth:
           _errorMessage = 'Неправильный логин пароль!';
           break;
+        case ApiClientExceptionType.SessionExpired:
         case ApiClientExceptionType.Other:
           _errorMessage = 'Произошла ошибка. Попробуйте еще раз';
           break;
