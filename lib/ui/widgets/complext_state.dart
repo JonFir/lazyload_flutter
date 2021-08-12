@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+class ExampleWidget extends StatefulWidget {
+  const ExampleWidget({Key? key}) : super(key: key);
+
+  @override
+  _Controller createState() => _Controller();
+}
+
 class Complex {
   final int valueOne;
   final int valueTwo;
@@ -35,23 +42,22 @@ class Complex {
   int get hashCode => valueOne.hashCode ^ valueTwo.hashCode;
 }
 
-class Model {
+class _State {
   final int one;
   final int two;
   final Complex complex;
-
-  Model({
+  _State({
     required this.one,
     required this.two,
     required this.complex,
   });
 
-  Model copyWith({
+  _State copyWith({
     int? one,
     int? two,
     Complex? complex,
   }) {
-    return Model(
+    return _State(
       one: one ?? this.one,
       two: two ?? this.two,
       complex: complex ?? this.complex,
@@ -59,13 +65,13 @@ class Model {
   }
 
   @override
-  String toString() => 'Model(one: $one, two: $two, complex: $complex)';
+  String toString() => '_State(one: $one, two: $two, complex: $complex)';
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Model &&
+    return other is _State &&
         other.one == one &&
         other.two == two &&
         other.complex == complex;
@@ -75,13 +81,8 @@ class Model {
   int get hashCode => one.hashCode ^ two.hashCode ^ complex.hashCode;
 }
 
-class ExampleWidget extends StatefulWidget {
-  @override
-  _ExampleWidgetState createState() => _ExampleWidgetState();
-}
-
-class _ExampleWidgetState extends State<ExampleWidget> {
-  var model = Model(
+class _Controller extends State<ExampleWidget> {
+  var _state = _State(
     one: 0,
     two: 0,
     complex: Complex(
@@ -90,40 +91,34 @@ class _ExampleWidgetState extends State<ExampleWidget> {
     ),
   );
 
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        Provider.value(value: _state),
+        Provider.value(value: this),
+      ],
+      child: const _View(),
+    );
+  }
+
   void inc1() {
-    model = model.copyWith(one: model.one + 1);
+    _state = _state.copyWith(one: _state.one + 1);
     setState(() {});
   }
 
   void inc2() {
-    model = model.copyWith(two: model.two + 1);
+    _state = _state.copyWith(two: _state.two + 1);
     setState(() {});
   }
 
-  void incComplex1() {
-    final complex = model.complex.copyWith(
-      valueOne: model.complex.valueOne + 1,
+  void complex() {
+    final complex = _state.complex.copyWith(
+      valueOne: _state.complex.valueOne + 1,
     );
-    model = model.copyWith(complex: complex);
+    _state = _state.copyWith(complex: complex);
     setState(() {});
   }
-
-  void incComplex2() {
-    final complex = model.complex.copyWith(
-      valueTwo: model.complex.valueTwo + 1,
-    );
-    model = model.copyWith(complex: complex);
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) => MultiProvider(
-        providers: [
-          Provider.value(value: this),
-          Provider.value(value: model),
-        ],
-        child: const _View(),
-      );
 }
 
 class _View extends StatelessWidget {
@@ -131,27 +126,22 @@ class _View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.read<_ExampleWidgetState>();
-
+    final controller = context.read<_Controller>();
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             ElevatedButton(
-              onPressed: state.inc1,
+              onPressed: controller.inc1,
               child: const Text('one'),
             ),
             ElevatedButton(
-              onPressed: state.inc2,
+              onPressed: controller.inc2,
               child: const Text('two'),
             ),
             ElevatedButton(
-              onPressed: state.incComplex1,
-              child: const Text('complex1'),
-            ),
-            ElevatedButton(
-              onPressed: state.incComplex2,
-              child: const Text('complex2'),
+              onPressed: controller.complex,
+              child: const Text('complex'),
             ),
             const _OneWidget(),
             const _TwoWidget(),
@@ -169,7 +159,7 @@ class _OneWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final value = context.select((Model value) => value.one);
+    final value = context.select((_State state) => state.one);
     return Text("$value");
   }
 }
@@ -179,7 +169,7 @@ class _TwoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final value = context.select((Model value) => value.two);
+    final value = context.select((_State state) => state.two);
     return Text("$value");
   }
 }
@@ -189,7 +179,7 @@ class _ThreeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final value = context.select((Model value) => value.complex.valueOne);
+    final value = context.select((_State state) => state.complex.valueOne);
     return Text("$value");
   }
 }
@@ -199,7 +189,7 @@ class _FourWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final value = context.select((Model value) => value.complex.valueTwo);
+    final value = context.select((_State state) => state.complex.valueOne);
     return Text("$value");
   }
 }
