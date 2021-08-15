@@ -2,125 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Complex {
-  final int valueOne;
-  final int valueTwo;
-  Complex({
-    required this.valueOne,
-    required this.valueTwo,
-  });
-
-  Complex copyWith({
-    int? valueOne,
-    int? valueTwo,
-  }) {
-    return Complex(
-      valueOne: valueOne ?? this.valueOne,
-      valueTwo: valueTwo ?? this.valueTwo,
-    );
-  }
-
-  @override
-  String toString() => 'Complex(valueOne: $valueOne, valueTwo: $valueTwo)';
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Complex &&
-        other.valueOne == valueOne &&
-        other.valueTwo == valueTwo;
-  }
-
-  @override
-  int get hashCode => valueOne.hashCode ^ valueTwo.hashCode;
+  var valueOne = 0;
+  var valueTwo = 0;
 }
 
-class Model {
-  final int one;
-  final int two;
-  final Complex complex;
-
-  Model({
-    required this.one,
-    required this.two,
-    required this.complex,
-  });
-
-  Model copyWith({
-    int? one,
-    int? two,
-    Complex? complex,
-  }) {
-    return Model(
-      one: one ?? this.one,
-      two: two ?? this.two,
-      complex: complex ?? this.complex,
-    );
-  }
-
-  @override
-  String toString() => 'Model(one: $one, two: $two, complex: $complex)';
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Model &&
-        other.one == one &&
-        other.two == two &&
-        other.complex == complex;
-  }
-
-  @override
-  int get hashCode => one.hashCode ^ two.hashCode ^ complex.hashCode;
-}
-
-class ExampleWidget extends StatefulWidget {
-  @override
-  _ExampleWidgetState createState() => _ExampleWidgetState();
-}
-
-class _ExampleWidgetState extends State<ExampleWidget> {
-  var model = Model(
-    one: 0,
-    two: 0,
-    complex: Complex(
-      valueOne: 0,
-      valueTwo: 0,
-    ),
-  );
+class Model extends ChangeNotifier {
+  var one = 0;
+  var two = 0;
+  final complex = Complex();
 
   void inc1() {
-    model = model.copyWith(one: model.one + 1);
-    setState(() {});
+    one += 1;
+    notifyListeners();
   }
 
   void inc2() {
-    model = model.copyWith(two: model.two + 1);
-    setState(() {});
+    two += 2;
+    notifyListeners();
   }
 
   void incComplex1() {
-    final complex = model.complex.copyWith(
-      valueOne: model.complex.valueOne + 1,
-    );
-    model = model.copyWith(complex: complex);
-    setState(() {});
+    complex.valueOne += 1;
+    notifyListeners();
   }
 
   void incComplex2() {
-    final complex = model.complex.copyWith(
-      valueTwo: model.complex.valueTwo + 1,
-    );
-    model = model.copyWith(complex: complex);
-    setState(() {});
+    complex.valueTwo += 1;
+    notifyListeners();
   }
+}
 
+class ForExample extends ChangeNotifier {
+  var one = 0;
+  void inc1() {
+    one += 1;
+    notifyListeners();
+  }
+}
+
+class Wrapper {
+  final Model model;
+  final ForExample forExample;
+
+  Wrapper(this.model, this.forExample);
+}
+
+class ExampleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
-          Provider.value(value: this),
-          Provider.value(value: model),
+          ChangeNotifierProvider(create: (_) => Model()),
+          ChangeNotifierProvider(create: (_) => ForExample()),
+          ProxyProvider2(
+            update: (
+              BuildContext context,
+              Model model,
+              ForExample forExmaple,
+              prev,
+            ) {
+              return Wrapper(model, forExmaple);
+            },
+          ),
         ],
         child: const _View(),
       );
@@ -131,7 +73,7 @@ class _View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.read<_ExampleWidgetState>();
+    final state = context.read<Model>();
 
     return Scaffold(
       body: SafeArea(
@@ -157,6 +99,18 @@ class _View extends StatelessWidget {
             const _TwoWidget(),
             const _ThreeWidget(),
             const _FourWidget(),
+            Selector<Model, int>(
+              builder: (context, value, _) {
+                return Text('$value');
+              },
+              selector: (_, model) => model.one,
+              shouldRebuild: (prev, current) => current - prev > 1,
+            ),
+            Consumer2<Model, ForExample>(
+              builder: (context, model, forExample, child) {
+                return Text('${model.one}');
+              },
+            ),
           ],
         ),
       ),
