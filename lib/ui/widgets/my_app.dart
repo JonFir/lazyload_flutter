@@ -1,5 +1,6 @@
 import 'package:dart_lesson/ui/widgets/example_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -11,7 +12,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ExampleWidget(),
+      home: ChangeNotifierProvider(
+        create: (_) => ViewModel(),
+        child: const ExampleWidget(),
+      ),
     );
   }
 }
