@@ -1,3 +1,4 @@
+import 'package:dart_lesson/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -43,7 +44,7 @@ class _ViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> onAuthButtonPressed() async {
+  Future<void> onAuthButtonPressed(BuildContext context) async {
     final login = _state.login;
     final password = _state.password;
 
@@ -57,6 +58,7 @@ class _ViewModel extends ChangeNotifier {
       await _authService.login(login, password);
       _state.isAuthInProcess = false;
       notifyListeners();
+      MainNavigation.showLoader(context);
     } on AuthApiProviderIncorectLoginDataError {
       _state.authErrorTitle = 'Неправильный логин или пароль';
       _state.isAuthInProcess = false;
@@ -164,7 +166,7 @@ class AuthButtonWidget extends StatelessWidget {
         ? const CircularProgressIndicator()
         : const Text('Авторизоваться');
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: () => onPressed?.call(context),
       child: child,
     );
   }
