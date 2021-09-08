@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dart_lesson/domain/api_client/api_client.dart';
 import 'package:dart_lesson/domain/data_providers/session_data_provider.dart';
 import 'package:dart_lesson/ui/navigation/main_navigation.dart';

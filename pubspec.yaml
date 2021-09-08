@@ -23,7 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  pedantic: ^1.11.0
+  provider: ^6.0.0
+  flutter_lints: ^1.0.4
   flutter_secure_storage: ^4.2.0
   cupertino_icons: ^1.0.2
   json_annotation: ^4.0.0
