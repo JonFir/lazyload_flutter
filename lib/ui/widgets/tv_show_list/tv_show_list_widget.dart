@@ -19,7 +19,7 @@ class TVShow {
 }
 
 class TWShowListWidget extends StatefulWidget {
-  TWShowListWidget({Key? key}) : super(key: key);
+  const TWShowListWidget({Key? key}) : super(key: key);
 
   @override
   _TWShowListWidgetState createState() => _TWShowListWidgetState();
