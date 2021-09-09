@@ -1,5 +1,5 @@
 import 'package:dart_lesson/Library/Widgets/Inherited/provider.dart';
-import 'package:dart_lesson/domain/api_client/api_client.dart';
+import 'package:dart_lesson/domain/api_client/image_downloader.dart';
 import 'package:dart_lesson/domain/entity/movie_details_credits.dart';
 import 'package:dart_lesson/ui/navigation/main_navigation.dart';
 import 'package:dart_lesson/ui/widgets/elements/radial_percent_widget.dart';
@@ -82,14 +82,14 @@ class _TopPosterWidget extends StatelessWidget {
       child: Stack(
         children: [
           backdropPath != null
-              ? Image.network(ApiClient.imageUrl(backdropPath))
+              ? Image.network(ImageDownloader.imageUrl(backdropPath))
               : const SizedBox.shrink(),
           Positioned(
             top: 20,
             left: 20,
             bottom: 20,
             child: posterPath != null
-                ? Image.network(ApiClient.imageUrl(posterPath))
+                ? Image.network(ImageDownloader.imageUrl(posterPath))
                 : const SizedBox.shrink(),
           ),
           Positioned(
