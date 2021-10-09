@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:dart_lesson/domain/entity/user.dart';
 import 'package:dart_lesson/domain/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,51 +17,38 @@ class ViewModel extends ChangeNotifier {
 
   var _state = ViewModelState(ageTitle: '');
   ViewModelState get state => _state;
-
-  void loadValue() async {
-    await _userService.initilalize();
-    _updateState();
-  }
+  StreamSubscription<User>? userSubscription;
 
   ViewModel() {
-    loadValue();
-  }
-
-  Future<void> onIncrementButtonPressed() async {
-    _userService.incrementAge();
-    _updateState();
-  }
-
-  Future<void> onDecrementButtonPressed() async {
-    _userService.decrementAge();
-    _updateState();
-  }
-
-  void _updateState() {
-    final user = _userService.user;
-
     _state = ViewModelState(
-      ageTitle: user.age.toString(),
+      ageTitle: _userService.user.age.toString()
     );
-    notifyListeners();
+    userSubscription = _userService.userStream.listen((user) {
+      _state = ViewModelState(
+          ageTitle: _userService.user.age.toString()
+      );
+      notifyListeners();
+    });
+    _userService.openConnect();
   }
+
+  @override
+  void dispose() {
+    userSubscription?.cancel();
+    _userService.closeConnect();
+    super.dispose();
+  }
+
 }
 
 class ExampleWidget extends StatelessWidget {
   const ExampleWidget({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: SafeArea(
         child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              _AgeTitle(),
-              _AgeIncrementWidget(),
-              _AgeDecrementWidget(),
-            ],
-          ),
+          child: _AgeTitle(),
         ),
       ),
     );
@@ -72,31 +62,5 @@ class _AgeTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = context.select((ViewModel vm) => vm.state.ageTitle);
     return Text(title);
-  }
-}
-
-class _AgeIncrementWidget extends StatelessWidget {
-  const _AgeIncrementWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final viewModel = context.read<ViewModel>();
-    return ElevatedButton(
-      onPressed: viewModel.onIncrementButtonPressed,
-      child: const Text('+'),
-    );
-  }
-}
-
-class _AgeDecrementWidget extends StatelessWidget {
-  const _AgeDecrementWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final viewModel = context.read<ViewModel>();
-    return ElevatedButton(
-      onPressed: viewModel.onDecrementButtonPressed,
-      child: const Text('-'),
-    );
   }
 }
