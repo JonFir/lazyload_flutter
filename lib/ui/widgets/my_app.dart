@@ -1,3 +1,4 @@
+import 'package:dart_lesson/domain/blocs/users_bloc.dart';
 import 'package:dart_lesson/ui/widgets/example_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,8 +13,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChangeNotifierProvider(
-        create: (_) => ViewModel(),
+      home: Provider(
+        create: (_) => UsersBloc(),
         child: const ExampleWidget(),
       ),
     );
