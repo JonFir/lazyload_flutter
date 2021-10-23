@@ -38,43 +38,58 @@ class UsersState {
 //</editor-fold>
 }
 
+abstract class UsersEvents {}
+
+class UsersIncrementEvent implements UsersEvents {}
+
+class UsersDecrementEvent implements UsersEvents {}
+
+class UsersInitializeEvent implements UsersEvents {}
+
 class UsersBloc {
   final _userDataProvider = UserDataProvider();
   var _state = UsersState(
     currentUser: User(0),
   );
 
-  final _stateController = StreamController<UsersState>.broadcast();
+  final _eventController = StreamController<UsersEvents>.broadcast();
+  late final Stream<UsersState> _stateStream;
 
   UsersState get state => _state;
-  Stream<UsersState> get stream => _stateController.stream;
+  Stream<UsersState> get stream => _stateStream;
 
   UsersBloc() {
-    _initialize();
+    _stateStream = _eventController.stream
+        .asyncExpand<UsersState>(_mapEventToState)
+        .asyncExpand(_updateState)
+        .asBroadcastStream();
+    dispatch(UsersInitializeEvent());
   }
 
-  void updateState(UsersState state) {
+  void dispatch(UsersEvents event) {
+    _eventController.add(event);
+  }
+
+  Stream<UsersState> _updateState(UsersState state) async* {
     if (_state == state) return;
     _state = state;
-    _stateController.add(state);
+    yield state;
   }
 
-  Future<void> _initialize() async {
-    final user = await _userDataProvider.loadValue();
-    updateState(_state.copyWith(currentUser: user));
-  }
-
-  void incrementAge() {
-    var user = _state.currentUser;
-    user = user.copyWith(age: user.age + 1);
-    updateState(_state.copyWith(currentUser: user));
-    _userDataProvider.saveValue(user);
-  }
-
-  void decrementAge() {
-    var user = _state.currentUser;
-    user = user.copyWith(age: user.age - 1);
-    updateState(_state.copyWith(currentUser: user));
-    _userDataProvider.saveValue(user);
+  Stream<UsersState> _mapEventToState(UsersEvents event) async* {
+    if (event is UsersInitializeEvent) {
+      final user = await _userDataProvider.loadValue();
+      yield UsersState(currentUser: user);
+    } else if (event is UsersIncrementEvent) {
+      var user = _state.currentUser;
+      user = user.copyWith(age: user.age + 1);
+      await _userDataProvider.saveValue(user);
+      yield UsersState(currentUser: user);
+    } else if (event is UsersDecrementEvent) {
+      var user = _state.currentUser;
+      user = user.copyWith(age: user.age - 1);
+      await _userDataProvider.saveValue(user);
+      yield UsersState(currentUser: user);
+    }
   }
 }
