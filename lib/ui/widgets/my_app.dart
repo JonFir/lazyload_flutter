@@ -1,4 +1,4 @@
-import 'package:dart_lesson/domain/blocs/users_bloc.dart';
+import 'package:dart_lesson/domain/blocs/users_cubit.dart';
 import 'package:dart_lesson/ui/widgets/example_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,9 +13,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Provider(
-        create: (_) => UsersBloc(),
+      home: Provider<UsersCubit>(
+        create: (_) => UsersCubit(),
         child: const ExampleWidget(),
+        dispose: (context, value) => value.close(),
       ),
     );
   }
