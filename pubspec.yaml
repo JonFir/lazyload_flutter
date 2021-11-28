@@ -25,13 +25,15 @@ dependencies:
     sdk: flutter
   provider: ^6.0.0
   flutter_lints: ^1.0.4
-  flutter_secure_storage: ^4.2.0
+  flutter_secure_storage: ^5.0.2
   cupertino_icons: ^1.0.2
   json_annotation: ^4.0.0
   flutter_localizations:
     sdk: flutter
   intl: ^0.17.0
   youtube_player_flutter: ^8.0.0
+  bloc: ^8.0.0
+  flutter_bloc: ^8.0.0
 
 dev_dependencies:
   flutter_test:
