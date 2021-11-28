@@ -1,3 +1,4 @@
+import 'package:dart_lesson/domain/blocs/auth_bloc.dart';
 import 'package:dart_lesson/ui/widgets/auth/auth_model.dart';
 import 'package:dart_lesson/ui/widgets/auth/auth_widget.dart';
 import 'package:dart_lesson/ui/widgets/loader_widget/loader_view_model.dart';
@@ -11,12 +12,20 @@ import 'package:dart_lesson/ui/widgets/movie_trailer/movie_trailer_widget.dart';
 import 'package:dart_lesson/ui/widgets/news/new_widget.dart';
 import 'package:dart_lesson/ui/widgets/tv_show_list/tv_show_list_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class ScreenFactory {
+  AuthBloc? _authBloc;
+
   Widget makeLoader() {
-    return Provider(
-      create: (context) => LoaderViewModel(context),
+    final authBloc = _authBloc ?? AuthBloc(AuthCheckStatusInProgressState());
+    _authBloc = authBloc;
+    return BlocProvider<LoaderViewCubit>(
+      create: (context) => LoaderViewCubit(
+        LoaderViewCubitState.unknown,
+        authBloc,
+      ),
       child: const LoaderWidget(),
       lazy: false,
     );
@@ -30,6 +39,8 @@ class ScreenFactory {
   }
 
   Widget makeMainScreen() {
+    _authBloc?.close();
+    _authBloc = null;
     return const MainScreenWidget();
   }
 
