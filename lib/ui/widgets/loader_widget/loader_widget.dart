@@ -1,5 +1,5 @@
 import 'package:dart_lesson/ui/navigation/main_navigation.dart';
-import 'package:dart_lesson/ui/widgets/loader_widget/loader_view_model.dart';
+import 'package:dart_lesson/ui/widgets/loader_widget/loader_view_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

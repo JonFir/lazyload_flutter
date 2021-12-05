@@ -1,5 +1,5 @@
-import 'package:dart_lesson/domain/data_providers/session_data_provider.dart';
 import 'package:dart_lesson/domain/factoryes/scren_factory.dart';
+import 'package:dart_lesson/domain/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class MainScreenWidget extends StatefulWidget {
@@ -27,7 +27,9 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
         title: const Text('TMDB'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              AuthService().logout();
+            },
             icon: const Icon(Icons.search),
           )
         ],

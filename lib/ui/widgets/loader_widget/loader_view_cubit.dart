@@ -8,16 +8,21 @@ enum LoaderViewCubitState { unknown, authorized, notAuthorized }
 class LoaderViewCubit extends Cubit<LoaderViewCubitState> {
   final AuthBloc authBloc;
   late final StreamSubscription<AuthState> authBlocSubscription;
+
   LoaderViewCubit(
     LoaderViewCubitState initialState,
     this.authBloc,
   ) : super(initialState) {
-    authBloc.add(AuthCheckStatusEvent());
-    onState(authBloc.state);
-    authBlocSubscription = authBloc.stream.listen(onState);
+    Future.microtask(
+      () {
+        _onState(authBloc.state);
+        authBlocSubscription = authBloc.stream.listen(_onState);
+        authBloc.add(AuthCheckStatusEvent());
+      },
+    );
   }
 
-  void onState(AuthState state) {
+  void _onState(AuthState state) {
     if (state is AuthAuthorizedState) {
       emit(LoaderViewCubitState.authorized);
     } else if (state is AuthUnauthorizedState) {
