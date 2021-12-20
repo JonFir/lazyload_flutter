@@ -1,11 +1,11 @@
 import 'package:dart_lesson/Library/Widgets/localized_model.dart';
-import 'package:dart_lesson/domain/services/movie_service.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:dart_lesson/domain/api_client/api_client_exception.dart';
 import 'package:dart_lesson/domain/entity/movie_details.dart';
 import 'package:dart_lesson/domain/services/auth_service.dart';
+import 'package:dart_lesson/domain/services/movie_service.dart';
 import 'package:dart_lesson/ui/navigation/main_navigation.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class MovieDetailsPosterData {
   final String? backdropPath;
@@ -203,7 +203,7 @@ class MovieDetailsModel extends ChangeNotifier {
         data.posterData.copyWith(isFavorite: !data.posterData.isFavorite);
     notifyListeners();
     try {
-      await _movieService.upateFavorite(
+      await _movieService.updateFavorite(
         movieId: movieId,
         isFavorite: data.posterData.isFavorite,
       );

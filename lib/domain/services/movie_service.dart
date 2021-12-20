@@ -42,7 +42,7 @@ class MovieService {
     return MovieDetailsLocal(details: movieDetails, isFavorite: isFavorite);
   }
 
-  Future<void> upateFavorite({
+  Future<void> updateFavorite({
     required int movieId,
     required bool isFavorite,
   }) async {
