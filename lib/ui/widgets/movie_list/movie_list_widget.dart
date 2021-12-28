@@ -1,5 +1,6 @@
 import 'package:dart_lesson/domain/api_client/image_downloader.dart';
-import 'package:dart_lesson/ui/widgets/movie_list/movie_list_model.dart';
+import 'package:dart_lesson/ui/navigation/main_navigation.dart';
+import 'package:dart_lesson/ui/widgets/movie_list/movie_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,7 @@ class _MovieListWidgetState extends State<MovieListWidget> {
     super.didChangeDependencies();
 
     final locale = Localizations.localeOf(context);
-    context.read<MovieListViewModel>().setupLocale(locale);
+    context.read<MovieListCubit>().setupLocale(locale.languageCode);
   }
 
   @override
@@ -35,11 +36,11 @@ class _SearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<MovieListViewModel>();
+    final cubit = context.read<MovieListCubit>();
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextField(
-        onChanged: model.serachMovie,
+        onChanged: cubit.searchMovie,
         decoration: InputDecoration(
           labelText: 'Поиск',
           filled: true,
@@ -56,14 +57,14 @@ class _MovieListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MovieListViewModel>();
+    final cubit = context.watch<MovieListCubit>();
     return ListView.builder(
       padding: const EdgeInsets.only(top: 70),
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      itemCount: model.movies.length,
+      itemCount: cubit.state.movies.length,
       itemExtent: 163,
       itemBuilder: (BuildContext context, int index) {
-        model.showedMovieAtIndex(index);
+        cubit.showedMovieAtIndex(index);
         return _MovieListRowWidget(index: index);
       },
     );
@@ -79,8 +80,8 @@ class _MovieListRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<MovieListViewModel>();
-    final movie = model.movies[index];
+    final cubit = context.read<MovieListCubit>();
+    final movie = cubit.state.movies[index];
     final posterPath = movie.posterPath;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -143,11 +144,18 @@ class _MovieListRowWidget extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(10),
-              onTap: () => model.onMovieTap(context, index),
+              onTap: () => _onMovieTap(context, movie.id),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _onMovieTap(BuildContext context, int movieId) {
+    Navigator.of(context).pushNamed(
+      MainNavigationRouteNames.movieDetails,
+      arguments: movieId,
     );
   }
 }
