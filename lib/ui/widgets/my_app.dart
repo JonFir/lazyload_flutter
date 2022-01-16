@@ -1,3 +1,4 @@
+import 'package:dart_lesson/ui/widgets/example_view_model.dart';
 import 'package:dart_lesson/ui/widgets/example_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ExampleWidget(),
+      home: const ExampleWidget(model: ExamplePetViewModel()),
     );
   }
 }
