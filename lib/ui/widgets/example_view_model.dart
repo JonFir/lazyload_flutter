@@ -2,9 +2,8 @@ import 'package:dart_lesson/ui/widgets/calculator_service.dart';
 import 'package:dart_lesson/ui/widgets/example_widget.dart';
 
 class ExampleCalcViewModel implements ExampleViewModel {
-  final calculatorService = const CalculatorService();
-
-  const ExampleCalcViewModel();
+  final CalculatorService calculatorService;
+  const ExampleCalcViewModel(this.calculatorService);
 
   @override
   void onPressMe() {

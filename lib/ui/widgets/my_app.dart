@@ -1,9 +1,13 @@
-import 'package:dart_lesson/ui/widgets/example_view_model.dart';
-import 'package:dart_lesson/ui/widgets/example_widget.dart';
 import 'package:flutter/material.dart';
 
+abstract class MainNavigation {
+  Map<String, Widget Function(BuildContext)> makeRoutes();
+  Route<Object> onGenerateRoute(RouteSettings settings);
+}
+
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final MainNavigation mainNavigation;
+  const MyApp({Key? key, required this.mainNavigation}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +16,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ExampleWidget(model: ExamplePetViewModel()),
+      routes: mainNavigation.makeRoutes(),
+      onGenerateRoute: mainNavigation.onGenerateRoute,
     );
   }
 }

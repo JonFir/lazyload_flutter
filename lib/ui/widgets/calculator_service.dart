@@ -3,9 +3,10 @@ import 'package:dart_lesson/ui/widgets/summator.dart';
 enum CalculatorServiceOperation { summ }
 
 class CalculatorService {
-  final summator = const Summator();
+  final Summator summator;
 
-  const CalculatorService();
+  const CalculatorService(this.summator);
+
   int calculate(int a, int b, CalculatorServiceOperation operation) {
     if (operation == CalculatorServiceOperation.summ) {
       return summator.summ(a, b);
