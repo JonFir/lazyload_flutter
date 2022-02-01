@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 abstract class ExampleViewModel {
   void onPressMe();
@@ -6,12 +7,11 @@ abstract class ExampleViewModel {
 }
 
 class ExampleWidget extends StatelessWidget {
-  final ExampleViewModel model;
-
-  const ExampleWidget({Key? key, required this.model}) : super(key: key);
+  const ExampleWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<ExampleViewModel>();
     return Scaffold(
       body: SafeArea(
         child: Center(

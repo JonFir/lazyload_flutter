@@ -1,13 +1,31 @@
 import 'package:dart_lesson/factories/di_container.dart';
 import 'package:flutter/material.dart';
 
-abstract class MainDIContainer {
-  Widget makeApp();
-}
+/*
+IoC Инверсия управления. Позволяет изменить направление зависмостей. 
 
-final diContainer = makeDIContainer();
+DI - внедрение зависимостей. Когда класс получает зависмость из вне.
+ И не контролирует этот процесс
+
+DI container - это класс который создает зависимости и внедряет их.
+
+Плюсы:
+* Полная незвисимость классов
+* Ясность. При вызове или просмотре конструктора видно, 
+что необходимо для работы класса
+* Позволяет использовать инверсию зависмостей
+* МОжно расставлять const конструкторы
+---
+
+Service locator - это класс которые создает зависмости и используется
+ для получения этих зависмостей.
+
+ Плюс:
+ * Меньше кода
+ * Позволяет использовать инверсию зависмостей
+*/
 
 void main() {
-  final app = diContainer.makeApp();
+  final app = ServiceLocator.instace.makeApp();
   runApp(app);
 }
