@@ -1,5 +1,6 @@
 import 'package:dart_lesson/factories/di_container.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 /*
 IoC Инверсия управления. Позволяет изменить направление зависмостей. 
@@ -25,7 +26,15 @@ Service locator - это класс которые создает зависмо
  * Позволяет использовать инверсию зависмостей
 */
 
-void main() {
-  final app = ServiceLocator.instace.makeApp();
+abstract class AppFactory {
+  Widget makeApp();
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  setupGetIt();
+  await GetIt.instance.allReady();
+  final appFactory = GetIt.instance<AppFactory>();
+  final app = appFactory.makeApp();
   runApp(app);
 }

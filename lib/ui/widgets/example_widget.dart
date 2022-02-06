@@ -1,5 +1,6 @@
+import 'package:dart_lesson/ui/widgets/example_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 
 abstract class ExampleViewModel {
   void onPressMe();
@@ -11,7 +12,7 @@ class ExampleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<ExampleViewModel>();
+    final model = GetIt.instance<ExampleViewModel>();
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -24,6 +25,15 @@ class ExampleWidget extends StatelessWidget {
               ElevatedButton(
                 onPressed: model.onPressMe2,
                 child: const Text("Жми меня 2"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  GetIt.instance.unregister<ExampleViewModel>();
+                  GetIt.instance.registerFactory<ExampleViewModel>(
+                    () => const ExamplePetViewModel(),
+                  );
+                },
+                child: const Text("Жми меня 3"),
               ),
             ],
           ),

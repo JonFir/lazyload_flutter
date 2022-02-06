@@ -1,9 +1,9 @@
-import 'package:dart_lesson/factories/di_container.dart';
 import 'package:dart_lesson/ui/widgets/calculator_service.dart';
 import 'package:dart_lesson/ui/widgets/example_widget.dart';
+import 'package:get_it/get_it.dart';
 
 class ExampleCalcViewModel implements ExampleViewModel {
-  final calculatorService = ServiceLocator.instace.makeCalculatorService();
+  final calculatorService = GetIt.instance<CalculatorService>();
   ExampleCalcViewModel();
 
   @override

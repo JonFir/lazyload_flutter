@@ -1,9 +1,10 @@
-import 'package:dart_lesson/factories/di_container.dart';
+import 'package:dart_lesson/ui/widgets/summator.dart';
+import 'package:get_it/get_it.dart';
 
 enum CalculatorServiceOperation { summ }
 
 class CalculatorService {
-  final summator = ServiceLocator.instace.makeSummator();
+  final summator = GetIt.instance<Summator>();
 
   CalculatorService();
 
