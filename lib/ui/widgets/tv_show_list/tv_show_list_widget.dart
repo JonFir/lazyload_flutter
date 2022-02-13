@@ -1,5 +1,5 @@
 import 'package:dart_lesson/resources/resources.dart';
-import 'package:dart_lesson/ui/navigation/main_navigation.dart';
+import 'package:dart_lesson/ui/navigation/main_navigation_route_names.dart';
 import 'package:flutter/material.dart';
 
 class TVShow {

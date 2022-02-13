@@ -1,9 +1,12 @@
-import 'package:dart_lesson/domain/data_providers/session_data_provider.dart';
-import 'package:dart_lesson/domain/factoryes/scren_factory.dart';
+import 'package:dart_lesson/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
 class MainScreenWidget extends StatefulWidget {
-  const MainScreenWidget({Key? key}) : super(key: key);
+  final ScreenFactory screenFactory;
+  const MainScreenWidget({
+    Key? key,
+    required this.screenFactory,
+  }) : super(key: key);
 
   @override
   _MainScreenWidgetState createState() => _MainScreenWidgetState();
@@ -11,7 +14,6 @@ class MainScreenWidget extends StatefulWidget {
 
 class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedTab = 0;
-  final _screenFactory = ScreenFactory();
 
   void onSelectTab(int index) {
     if (_selectedTab == index) return;
@@ -35,9 +37,9 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       body: IndexedStack(
         index: _selectedTab,
         children: [
-          _screenFactory.makeNewsList(),
-          _screenFactory.makeMovieList(),
-          _screenFactory.makeTWShowList(),
+          widget.screenFactory.makeNewsList(),
+          widget.screenFactory.makeMovieList(),
+          widget.screenFactory.makeTWShowList(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

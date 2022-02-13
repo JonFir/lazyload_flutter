@@ -1,10 +1,15 @@
-import 'package:dart_lesson/domain/api_client/api_client_exception.dart';
-import 'package:dart_lesson/domain/services/auth_service.dart';
-import 'package:dart_lesson/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:dart_lesson/domain/api_client/api_client_exception.dart';
+import 'package:dart_lesson/ui/navigation/main_navigation_actions.dart';
+
+abstract class AuthViewModelLoginProvider {
+  Future<void> login(String login, String password);
+}
+
 class AuthViewModel extends ChangeNotifier {
-  final _authService = AuthService();
+  final MainNavigationAction mainNavigationAction;
+  final AuthViewModelLoginProvider loginProvider;
 
   final loginTextController = TextEditingController();
   final passwordTextController = TextEditingController();
@@ -19,9 +24,14 @@ class AuthViewModel extends ChangeNotifier {
   bool _isValid(String login, String password) =>
       login.isNotEmpty && password.isNotEmpty;
 
+  AuthViewModel({
+    required this.mainNavigationAction,
+    required this.loginProvider,
+  });
+
   Future<String?> _login(String login, String password) async {
     try {
-      await _authService.login(login, password);
+      await loginProvider.login(login, password);
     } on ApiClientException catch (e) {
       switch (e.type) {
         case ApiClientExceptionType.network:
@@ -50,7 +60,7 @@ class AuthViewModel extends ChangeNotifier {
 
     _errorMessage = await _login(login, password);
     if (_errorMessage == null) {
-      MainNavigation.resetNavigation(context);
+      mainNavigationAction.resetNavigation(context);
     } else {
       _updateState(_errorMessage, false);
     }

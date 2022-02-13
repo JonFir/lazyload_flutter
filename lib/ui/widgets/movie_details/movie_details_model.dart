@@ -1,11 +1,11 @@
 import 'package:dart_lesson/Library/Widgets/localized_model.dart';
-import 'package:dart_lesson/domain/services/movie_service.dart';
+import 'package:dart_lesson/domain/local_entity/movie_details_local.dart';
+
+import 'package:dart_lesson/ui/navigation/main_navigation_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dart_lesson/domain/api_client/api_client_exception.dart';
 import 'package:dart_lesson/domain/entity/movie_details.dart';
-import 'package:dart_lesson/domain/services/auth_service.dart';
-import 'package:dart_lesson/ui/navigation/main_navigation.dart';
 
 class MovieDetailsPosterData {
   final String? backdropPath;
@@ -92,16 +92,38 @@ class MovieDetailsData {
       const <MovieDetailsMovieActorData>[];
 }
 
+abstract class MovieDetailsModelLogoutProvider {
+  Future<void> logout();
+}
+
+abstract class MovieDetailsModelMovieProvider {
+  Future<MovieDetailsLocal> loadDetails({
+    required int movieId,
+    required String locale,
+  });
+
+  Future<void> upateFavorite({
+    required int movieId,
+    required bool isFavorite,
+  });
+}
+
 class MovieDetailsModel extends ChangeNotifier {
-  final _authService = AuthService();
-  final _movieService = MovieService();
+  final MovieDetailsModelLogoutProvider logoutProvider;
+  final MovieDetailsModelMovieProvider movieProvider;
+  final MainNavigationAction navigationAction;
 
   final int movieId;
   final data = MovieDetailsData();
   final _localeStorage = LocalizedModelStorage();
   late DateFormat _dateFormat;
 
-  MovieDetailsModel(this.movieId);
+  MovieDetailsModel(
+    this.movieId, {
+    required this.logoutProvider,
+    required this.movieProvider,
+    required this.navigationAction,
+  });
 
   Future<void> setupLocale(BuildContext context, Locale locale) async {
     if (!_localeStorage.updateLocale(locale)) return;
@@ -188,7 +210,7 @@ class MovieDetailsModel extends ChangeNotifier {
 
   Future<void> loadDetails(BuildContext context) async {
     try {
-      final ditails = await _movieService.loadDetails(
+      final ditails = await movieProvider.loadDetails(
         movieId: movieId,
         locale: _localeStorage.localeTag,
       );
@@ -203,7 +225,7 @@ class MovieDetailsModel extends ChangeNotifier {
         data.posterData.copyWith(isFavorite: !data.posterData.isFavorite);
     notifyListeners();
     try {
-      await _movieService.upateFavorite(
+      await movieProvider.upateFavorite(
         movieId: movieId,
         isFavorite: data.posterData.isFavorite,
       );
@@ -218,8 +240,8 @@ class MovieDetailsModel extends ChangeNotifier {
   ) {
     switch (exeption.type) {
       case ApiClientExceptionType.sessionExpired:
-        _authService.logout();
-        MainNavigation.resetNavigation(context);
+        logoutProvider.logout();
+        navigationAction.resetNavigation(context);
         break;
       default:
         print(exeption);

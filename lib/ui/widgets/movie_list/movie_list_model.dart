@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:dart_lesson/Library/Widgets/localized_model.dart';
 import 'package:dart_lesson/Library/paginator.dart';
 import 'package:dart_lesson/domain/entity/movie.dart';
-import 'package:dart_lesson/domain/services/movie_service.dart';
-import 'package:dart_lesson/ui/navigation/main_navigation.dart';
+import 'package:dart_lesson/domain/entity/popular_movie_response.dart';
+import 'package:dart_lesson/ui/navigation/main_navigation_route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -24,8 +24,17 @@ class MovieListRowData {
   });
 }
 
+abstract class MovieListViewModelMoviesProvider {
+  Future<PopularMovieResponse> popularMovie(int page, String locale);
+  Future<PopularMovieResponse> searchMovie(
+    int page,
+    String locale,
+    String query,
+  );
+}
+
 class MovieListViewModel extends ChangeNotifier {
-  final _movieService = MovieService();
+  final MovieListViewModelMoviesProvider moviesProvider;
   late final Paginator<Movie> _popularMoviePaginator;
   late final Paginator<Movie> _searchMoviePaginator;
   Timer? searchDeboubce;
@@ -41,10 +50,10 @@ class MovieListViewModel extends ChangeNotifier {
   List<MovieListRowData> get movies => List.unmodifiable(_movies);
   late DateFormat _dateFormat;
 
-  MovieListViewModel() {
+  MovieListViewModel(this.moviesProvider) {
     _popularMoviePaginator = Paginator<Movie>((page) async {
       final result =
-          await _movieService.popularMovie(page, _localeStorage.localeTag);
+          await moviesProvider.popularMovie(page, _localeStorage.localeTag);
       return PaginatorLoadResult(
         data: result.movies,
         currentPage: result.page,
@@ -53,7 +62,7 @@ class MovieListViewModel extends ChangeNotifier {
     });
 
     _searchMoviePaginator = Paginator<Movie>((page) async {
-      final result = await _movieService.searchMovie(
+      final result = await moviesProvider.searchMovie(
         page,
         _localeStorage.localeTag,
         _searchQuery ?? '',

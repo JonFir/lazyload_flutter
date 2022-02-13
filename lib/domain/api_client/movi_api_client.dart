@@ -3,8 +3,35 @@ import 'package:dart_lesson/domain/api_client/network_client.dart';
 import 'package:dart_lesson/domain/entity/popular_movie_response.dart';
 import 'package:dart_lesson/domain/entity/movie_details.dart';
 
-class MovieApiClient {
-  final _networkClient = NetworkClient();
+abstract class MovieApiClient {
+  Future<PopularMovieResponse> popularMovie(
+    int page,
+    String locale,
+    String apiKey,
+  );
+
+  Future<PopularMovieResponse> searchMovie(
+    int page,
+    String locale,
+    String query,
+    String apiKey,
+  );
+
+  Future<MovieDetails> movieDetails(
+    int movieId,
+    String locale,
+  );
+
+  Future<bool> isFavorite(
+    int movieId,
+    String sessionId,
+  );
+}
+
+class MovieApiClientDefault implements MovieApiClient {
+  final NetworkClient networkClient;
+
+  const MovieApiClientDefault(this.networkClient);
 
   Future<PopularMovieResponse> popularMovie(
     int page,
@@ -17,7 +44,7 @@ class MovieApiClient {
       return response;
     }
 
-    final result = _networkClient.get(
+    final result = networkClient.get(
       '/movie/popular',
       parser,
       <String, dynamic>{
@@ -41,7 +68,7 @@ class MovieApiClient {
       return response;
     }
 
-    final result = _networkClient.get(
+    final result = networkClient.get(
       '/search/movie',
       parser,
       <String, dynamic>{
@@ -65,7 +92,7 @@ class MovieApiClient {
       return response;
     }
 
-    final result = _networkClient.get(
+    final result = networkClient.get(
       '/movie/$movieId',
       parser,
       <String, dynamic>{
@@ -87,7 +114,7 @@ class MovieApiClient {
       return result;
     }
 
-    final result = _networkClient.get(
+    final result = networkClient.get(
       '/movie/$movieId/account_states',
       parser,
       <String, dynamic>{

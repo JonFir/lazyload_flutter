@@ -1,7 +1,13 @@
-import 'package:dart_lesson/ui/widgets/app/my_app.dart';
+import 'package:dart_lesson/di/di_container.dart';
 import 'package:flutter/material.dart';
 
+abstract class AppFactory {
+  Widget makeApp();
+}
+
+final appFactory = makeAppFactory();
+
 void main() {
-  const app = MyApp();
+  final app = appFactory.makeApp();
   runApp(app);
 }
