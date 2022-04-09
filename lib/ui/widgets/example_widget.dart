@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 
-const duration = Duration(milliseconds: 250);
+const duration = Duration(milliseconds: 500);
 
 class ExampleWidget extends StatefulWidget {
   const ExampleWidget({Key? key}) : super(key: key);
@@ -9,25 +10,56 @@ class ExampleWidget extends StatefulWidget {
   State<ExampleWidget> createState() => _ExampleWidgetState();
 }
 
-class _ExampleWidgetState extends State<ExampleWidget> {
-  var toggle = true;
+class _ExampleWidgetState extends State<ExampleWidget>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: duration);
+    _controller.addListener(() {
+      print(_controller.status);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            toggle = !toggle;
-          });
-        },
-        child: const Icon(Icons.play_arrow),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                _controller.reverse();
+                // if (_controller.isCompleted) {
+                //   _controller.reverse();
+                // } else {
+                //   _controller.forward();
+                // }
+              });
+            },
+            child: const Icon(Icons.pause),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                // _controller.animateTo(0.5);
+                // _controller.repeat(reverse: true);
+                _controller.forward();
+              });
+            },
+            child: const Icon(Icons.play_arrow),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(
           child: Container(
             padding: const EdgeInsets.all(40),
             color: Colors.black,
-            child: TweenAnimationBuilderExample(toggle: toggle),
+            child: AnimatedWidgetExample(controller: _controller),
           ),
         ),
       ),
@@ -35,64 +67,45 @@ class _ExampleWidgetState extends State<ExampleWidget> {
   }
 }
 
-class TweenAnimationBuilderExample extends StatelessWidget {
-  final bool toggle;
-  static final _forwardTween = ColorTween(
-    begin: Colors.white,
-    end: Colors.red,
-  );
-  static final _reverseTween = ReverseTween(_forwardTween);
+class ScaleTransitionExample extends StatelessWidget {
+  final AnimationController controller;
 
-  const TweenAnimationBuilderExample({
+  const ScaleTransitionExample({
     Key? key,
-    required this.toggle,
+    required this.controller,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder(
-      tween: toggle ? _forwardTween : _reverseTween,
-      duration: duration,
-      builder: (BuildContext context, Color? color, Widget? child) {
-        return ColorFiltered(
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: controller.value,
           child: child,
-          colorFilter: ColorFilter.mode(color!, BlendMode.modulate),
         );
       },
-      child: Image.asset('images/sun.jpg'),
+      child: Container(
+        width: 100,
+        height: 200,
+        color: Colors.red,
+      ),
     );
   }
 }
 
-class TweenAnimationBuilderSecondExample extends StatelessWidget {
-  final bool toggle;
-  static final _forwardTween = Tween(
-    begin: 0.0,
-    end: 1.0,
-  );
-  static final _reverseTween = ReverseTween(_forwardTween);
-
-  const TweenAnimationBuilderSecondExample({
-    Key? key,
-    required this.toggle,
-  }) : super(key: key);
+class AnimatedWidgetExample extends AnimatedWidget {
+  const AnimatedWidgetExample({required AnimationController controller})
+      : super(listenable: controller);
 
   @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder(
-      tween: toggle ? _forwardTween : _reverseTween,
-      duration: duration,
-      builder: (BuildContext context, double value, Widget? child) {
-        return Opacity(
-          opacity: value,
-          child: SizedBox(
-            width: 200 * value,
-            height: 200 * value,
-            child: child,
-          ),
-        );
-      },
+    final animation = listenable as Animation<double>;
+    return Transform.scale(
+      scale: animation.value,
       child: Container(
+        width: 100,
+        height: 200,
         color: Colors.red,
       ),
     );
