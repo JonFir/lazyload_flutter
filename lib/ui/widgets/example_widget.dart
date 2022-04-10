@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 
-const duration = Duration(milliseconds: 500);
+const duration = Duration(milliseconds: 4000);
 
 class ExampleWidget extends StatefulWidget {
   const ExampleWidget({Key? key}) : super(key: key);
@@ -18,48 +17,25 @@ class _ExampleWidgetState extends State<ExampleWidget>
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: duration);
-    _controller.addListener(() {
-      print(_controller.status);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                _controller.reverse();
-                // if (_controller.isCompleted) {
-                //   _controller.reverse();
-                // } else {
-                //   _controller.forward();
-                // }
-              });
-            },
-            child: const Icon(Icons.pause),
-          ),
-          FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                // _controller.animateTo(0.5);
-                // _controller.repeat(reverse: true);
-                _controller.forward();
-              });
-            },
-            child: const Icon(Icons.play_arrow),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _controller.forward();
+          });
+        },
+        child: const Icon(Icons.play_arrow),
       ),
       body: SafeArea(
         child: Center(
           child: Container(
             padding: const EdgeInsets.all(40),
             color: Colors.black,
-            child: AnimatedWidgetExample(controller: _controller),
+            child: ScaleTransitionExample(controller: _controller),
           ),
         ),
       ),
@@ -80,34 +56,92 @@ class ScaleTransitionExample extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
-        return Transform.scale(
-          scale: controller.value,
-          child: child,
+        return CustomPaint(
+          painter: MyIconPainter(controller),
+          size: const Size(300, 300),
         );
       },
-      child: Container(
-        width: 100,
-        height: 200,
-        color: Colors.red,
-      ),
     );
   }
 }
 
-class AnimatedWidgetExample extends AnimatedWidget {
-  const AnimatedWidgetExample({required AnimationController controller})
-      : super(listenable: controller);
+class MyIconPainter extends CustomPainter {
+  final AnimationController controller;
 
-  @override
-  Widget build(BuildContext context) {
-    final animation = listenable as Animation<double>;
-    return Transform.scale(
-      scale: animation.value,
-      child: Container(
-        width: 100,
-        height: 200,
-        color: Colors.red,
+  late final Animation<double> dotGrow;
+  late final Animation<double> lineGrow;
+  late final Animation<double> linesMove;
+
+  MyIconPainter(this.controller) {
+    dotGrow = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0.0, 0.25, curve: Curves.easeOut),
       ),
     );
+    lineGrow = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0.3, 0.55, curve: Curves.easeIn),
+      ),
+    );
+    linesMove = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0.6, 1.0, curve: Curves.bounceOut),
+      ),
+    );
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+
+    final dotPainter = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 0.0;
+
+    final linesPainter = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 40.0;
+
+    canvas.drawCircle(
+      Offset(centerX, centerY),
+      20.0 * dotGrow.value,
+      dotPainter,
+    );
+
+    if (dotGrow.value < 1.0) return;
+    canvas.drawLine(
+      Offset(
+        centerX - centerX * linesMove.value,
+        centerY - centerY * lineGrow.value,
+      ),
+      Offset(
+        centerX + centerX * linesMove.value,
+        centerY + centerY * lineGrow.value,
+      ),
+      linesPainter,
+    );
+    canvas.drawLine(
+      Offset(
+        centerX + centerX * linesMove.value,
+        centerY - centerY * lineGrow.value,
+      ),
+      Offset(
+        centerX - centerX * linesMove.value,
+        centerY + centerY * lineGrow.value,
+      ),
+      linesPainter,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
