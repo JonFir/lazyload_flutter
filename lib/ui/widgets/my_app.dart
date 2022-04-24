@@ -11,7 +11,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ExampleWidget(),
+      routes: {
+        '/': (_) => const ExampleWidget(),
+      },
+      onGenerateRoute: (_) {
+        return PageRouteBuilder<Object>(
+          transitionDuration: Duration(seconds: 4),
+          pageBuilder: (_, __, ___) => ExampleWidget2(),
+        );
+      },
+      // home: const ExampleWidget(),
     );
   }
 }

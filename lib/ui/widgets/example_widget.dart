@@ -1,41 +1,41 @@
+import 'dart:math';
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
 
-const duration = Duration(milliseconds: 4000);
-
-class ExampleWidget extends StatefulWidget {
+class ExampleWidget extends StatelessWidget {
   const ExampleWidget({Key? key}) : super(key: key);
-
-  @override
-  State<ExampleWidget> createState() => _ExampleWidgetState();
-}
-
-class _ExampleWidgetState extends State<ExampleWidget>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: duration);
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            _controller.forward();
-          });
+          Navigator.of(context).pushNamed("second");
         },
-        child: const Icon(Icons.play_arrow),
+        child: const Icon(Icons.next_plan),
       ),
-      body: SafeArea(
-        child: Center(
+      backgroundColor: Colors.red,
+      body: Align(
+        alignment: Alignment.topLeft,
+        child: Hero(
+          tag: "some",
+          // flightShuttleBuilder: (
+          //   BuildContext flightContext,
+          //   Animation<double> animation,
+          //   HeroFlightDirection flightDirection,
+          //   BuildContext fromHeroContext,
+          //   BuildContext toHeroContext,
+          // ) {
+          //   return RotationTransition(
+          //     turns: animation,
+          //     child: toHeroContext.widget,
+          //   );
+          // },
           child: Container(
-            padding: const EdgeInsets.all(40),
-            color: Colors.black,
-            child: ScaleTransitionExample(controller: _controller),
+            width: 100,
+            height: 100,
+            color: Colors.blue,
           ),
         ),
       ),
@@ -43,105 +43,114 @@ class _ExampleWidgetState extends State<ExampleWidget>
   }
 }
 
-class ScaleTransitionExample extends StatelessWidget {
-  final AnimationController controller;
-
-  const ScaleTransitionExample({
-    Key? key,
-    required this.controller,
-  }) : super(key: key);
+class ExampleWidget2 extends StatelessWidget {
+  const ExampleWidget2({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        return CustomPaint(
-          painter: MyIconPainter(controller),
-          size: const Size(300, 300),
-        );
-      },
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: const Icon(Icons.next_plan),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      backgroundColor: Colors.green,
+      body: Align(
+        alignment: Alignment.bottomRight,
+        child: Hero(
+          tag: "some",
+          createRectTween: _createRectTween,
+          // placeholderBuilder: (context, size, child) {
+          //   return Opacity(opacity: 0.2, child: child);
+          // },
+          child: Container(
+            width: 100,
+            height: 100,
+            color: Colors.blue,
+          ),
+        ),
+      ),
     );
   }
 }
 
-class MyIconPainter extends CustomPainter {
-  final AnimationController controller;
+class QuadraticRectTween extends RectTween {
+  QuadraticRectTween({
+    Rect? begin,
+    Rect? end,
+  }) : super(begin: begin, end: end);
 
-  late final Animation<double> dotGrow;
-  late final Animation<double> lineGrow;
-  late final Animation<double> linesMove;
+  bool _dirty = true;
 
-  MyIconPainter(this.controller) {
-    dotGrow = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.0, 0.25, curve: Curves.easeOut),
-      ),
+  void _initialize() {
+    assert(begin != null);
+    assert(end != null);
+    _centerArc = QuadraticOffsetTween(
+      begin: begin!.center,
+      end: end!.center,
     );
-    lineGrow = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.3, 0.55, curve: Curves.easeIn),
-      ),
-    );
-    linesMove = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.6, 1.0, curve: Curves.bounceOut),
-      ),
-    );
+    _dirty = false;
+  }
+
+  QuadraticOffsetTween? get centerArc {
+    if (begin == null || end == null) return null;
+    if (_dirty) _initialize();
+    return _centerArc;
+  }
+
+  late QuadraticOffsetTween _centerArc;
+
+  @override
+  set begin(Rect? value) {
+    if (value != begin) {
+      super.begin = value;
+      _dirty = true;
+    }
   }
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final centerX = size.width / 2;
-    final centerY = size.height / 2;
-
-    final dotPainter = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.fill
-      ..strokeWidth = 0.0;
-
-    final linesPainter = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 40.0;
-
-    canvas.drawCircle(
-      Offset(centerX, centerY),
-      20.0 * dotGrow.value,
-      dotPainter,
-    );
-
-    if (dotGrow.value < 1.0) return;
-    canvas.drawLine(
-      Offset(
-        centerX - centerX * linesMove.value,
-        centerY - centerY * lineGrow.value,
-      ),
-      Offset(
-        centerX + centerX * linesMove.value,
-        centerY + centerY * lineGrow.value,
-      ),
-      linesPainter,
-    );
-    canvas.drawLine(
-      Offset(
-        centerX + centerX * linesMove.value,
-        centerY - centerY * lineGrow.value,
-      ),
-      Offset(
-        centerX - centerX * linesMove.value,
-        centerY + centerY * lineGrow.value,
-      ),
-      linesPainter,
-    );
+  set end(Rect? value) {
+    if (value != end) {
+      super.end = value;
+      _dirty = true;
+    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  Rect lerp(double t) {
+    if (_dirty) _initialize();
+    if (t == 0.0) return begin!;
+    if (t == 1.0) return end!;
+    final Offset center = _centerArc.lerp(t);
+    final double width = lerpDouble(begin!.width, end!.width, t)!;
+    final double height = lerpDouble(begin!.height, end!.height, t)!;
+    return Rect.fromLTWH(
+        center.dx - width / 2.0, center.dy - height / 2.0, width, height);
+  }
+}
+
+RectTween _createRectTween(Rect? begin, Rect? end) {
+  return QuadraticRectTween(begin: begin, end: end);
+}
+
+class QuadraticOffsetTween extends Tween<Offset> {
+  QuadraticOffsetTween({
+    required Offset begin,
+    required Offset end,
+  }) : super(begin: begin, end: end);
+
+  @override
+  Offset lerp(double t) {
+    final begin = this.begin ?? Offset.zero;
+    final end = this.end ?? Offset.zero;
+    if (t == 0.0) return begin;
+    if (t == 1.0) return end;
+    final double x =
+        -11 * begin.dx * pow(t, 2) + (end.dx + 10 * begin.dx) * t + begin.dx;
+    final double y =
+        -2 * begin.dy * pow(t, 2) + (end.dy + 1 * begin.dy) * t + begin.dy;
+    return Offset(x, y);
   }
 }
